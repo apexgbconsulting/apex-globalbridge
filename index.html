@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex GlobalBridge Consulting</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Jost:wght@300;400;500;600&display=swap');
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --navy:      #0B1F3A;
+      --navy-mid:  #162E52;
+      --navy-lite: #1E3D6E;
+      --gold:      #C8973A;
+      --gold-lite: #E6B96A;
+      --gold-pale: #F5E6C8;
+      --cream:     #FAF7F2;
+      --white:     #FFFFFF;
+      --text:      #1A2A3A;
+      --muted:     #6B7E93;
+      --border:    rgba(200,151,58,.2);
+
+      --serif: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+      --sans:  'Jost', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+      --r: 4px;
+      --shadow: 0 4px 32px rgba(11,31,58,.12);
+      --shadow-lg: 0 12px 48px rgba(11,31,58,.18);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { font-family: var(--sans); color: var(--text); background: var(--cream); overflow-x: hidden; }
+    img  { max-width: 100%; display: block; }
+    a    { text-decoration: none; color: inherit; }
+    ul   { list-style: none; }
+
+    /* ─── UTILITY ────────────────────────────────────────────── */
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+    .section    { padding: 96px 0; }
+    .section--dark { background: var(--navy); color: var(--white); }
+    .section--cream { background: var(--cream); }
+    .section--white { background: var(--white); }
+
+    .label {
+      font-family: var(--sans);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.22;
+      margin-top: .5rem;
+    }
+    .h2--light { color: var(--white); }
+    .lead {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 560px;
+      margin-top: 1rem;
+    }
+    .lead--light { color: rgba(255,255,255,.72); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--sans); font-size: .9rem; font-weight: 600;
+      letter-spacing: .04em;
+      padding: .85rem 2rem;
+      border-radius: var(--r);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all .25s;
+    }
+    .btn--gold   { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+    .btn--gold:hover { background: var(--gold-lite); border-color: var(--gold-lite); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,151,58,.35); }
+    .btn--outline { background: transparent; color: var(--white); border-color: rgba(255,255,255,.45); }
+    .btn--outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+    .btn--navy { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .btn--navy:hover { background: var(--navy-lite); border-color: var(--navy-lite); transform: translateY(-2px); }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      transition: background .3s, box-shadow .3s;
+      padding: 0 28px;
+    }
+    .nav.scrolled { background: var(--navy); box-shadow: 0 2px 24px rgba(0,0,0,.3); }
+    .nav__inner {
+      max-width: 1160px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px;
+    }
+    .nav__logo { display: flex; flex-direction: column; }
+    .nav__logo-name {
+      font-family: var(--serif); font-size: 1.18rem; font-weight: 700;
+      color: var(--white); line-height: 1.1;
+    }
+    .nav__logo-tag {
+      font-family: var(--sans); font-size: .62rem;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--gold);
+    }
+    .nav__links { display: flex; gap: 2.2rem; align-items: center; }
+    .nav__link {
+      font-size: .88rem; font-weight: 500; color: rgba(255,255,255,.82);
+      transition: color .2s; letter-spacing: .03em;
+    }
+    .nav__link:hover, .nav__link.active { color: var(--gold); }
+    .nav__cta { margin-left: 1.5rem; }
+
+    .nav__hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .nav__hamburger span { display: block; width: 24px; height: 2px; background: var(--white); border-radius: 2px; transition: .3s; }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      background: var(--navy);
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .hero__bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(200,151,58,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 80% at -10% 60%, rgba(30,61,110,.8) 0%, transparent 60%),
+        linear-gradient(135deg, #0B1F3A 0%, #162E52 60%, #0e2645 100%);
+    }
+    .hero__grid {
+      position: absolute; inset: 0; opacity: .04;
+      background-image:
+        linear-gradient(rgba(200,151,58,1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,151,58,1) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero__content {
+      position: relative; z-index: 2;
+      max-width: 1160px; margin: 0 auto; padding: 120px 28px 80px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+    }
+    .hero__eyebrow { color: var(--gold); margin-bottom: 1.2rem; }
+    .hero__title {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 900; color: var(--white);
+      line-height: 1.12;
+    }
+    .hero__title em { color: var(--gold); font-style: normal; }
+    .hero__sub {
+      font-size: 1.05rem; color: rgba(255,255,255,.72);
+      line-height: 1.8; margin-top: 1.4rem; max-width: 480px;
+    }
+    .hero__actions { display: flex; gap: 1rem; margin-top: 2.4rem; flex-wrap: wrap; }
+    .hero__stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 3.2rem; }
+    .hero__stat-num {
+      font-family: var(--serif); font-size: 2.2rem; font-weight: 700; color: var(--gold);
+    }
+    .hero__stat-label { font-size: .78rem; color: rgba(255,255,255,.55); margin-top: .2rem; letter-spacing: .06em; text-transform: uppercase; }
+
+    .hero__visual {
+      position: relative; display: flex; justify-content: center; align-items: center;
+    }
+    .hero__card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(200,151,58,.25);
+      border-radius: 12px;
+      padding: 2.4rem;
+      width: 100%;
+      max-width: 380px;
+      backdrop-filter: blur(12px);
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+    .hero__card-title { font-family: var(--serif); font-size: 1.1rem; color: var(--white); margin-bottom: 1.4rem; }
+    .hero__card-item {
+      display: flex; align-items: center; gap: .9rem;
+      padding: .75rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      font-size: .88rem; color: rgba(255,255,255,.78);
+    }
+    .hero__card-item:last-child { border-bottom: none; }
+    .hero__card-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: rgba(200,151,58,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .hero__badge {
+      position: absolute; bottom: -16px; left: -16px;
+      background: var(--gold); color: var(--navy);
+      border-radius: 10px; padding: .8rem 1.2rem;
+      font-size: .78rem; font-weight: 700;
+      box-shadow: 0 8px 24px rgba(200,151,58,.4);
+    }
+
+    /* ─── STRIP ──────────────────────────────────────────────── */
+    .strip {
+      background: var(--gold);
+      padding: 1.1rem 28px;
+      overflow: hidden;
+    }
+    .strip__track {
+      display: flex; gap: 3.5rem; align-items: center;
+      animation: marquee 28s linear infinite;
+      white-space: nowrap;
+    }
+    .strip__item {
+      font-family: var(--sans); font-size: .8rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--navy); flex-shrink: 0;
+    }
+    .strip__dot { color: var(--navy-mid); opacity: .5; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ─── PAGE SECTIONS (hidden by default) ─────────────────── */
+    .page { display: none; animation: fadeUp .5s ease both; }
+    .page.active { display: block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ─── ABOUT ──────────────────────────────────────────────── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+    .about-img {
+      position: relative;
+    }
+    .about-img__main {
+      width: 100%; aspect-ratio: 4/3;
+      background: linear-gradient(135deg, var(--navy-mid), var(--navy-lite));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .about-img__accent {
+      position: absolute; bottom: -20px; right: -20px;
+      background: var(--gold); border-radius: 10px;
+      padding: 1.4rem 1.8rem; text-align: center;
+      box-shadow: 0 8px 28px rgba(200,151,58,.3);
+    }
+    .about-img__accent-num { font-family: var(--serif); font-size: 2rem; font-weight: 700; color: var(--navy); }
+    .about-img__accent-text { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--navy-mid); }
+    .about-values { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 2.4rem; }
+    .about-value {
+      padding: 1.2rem; border: 1px solid var(--border);
+      border-radius: var(--r); background: var(--white);
+    }
+    .about-value__icon { font-size: 1.3rem; margin-bottom: .5rem; }
+    .about-value__title { font-size: .88rem; font-weight: 600; color: var(--navy); }
+    .about-value__text { font-size: .8rem; color: var(--muted); margin-top: .3rem; line-height: 1.6; }
+    .team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3.5rem; }
+    .team-card {
+      background: var(--white); border-radius: 10px;
+      overflow: hidden; box-shadow: var(--shadow);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .team-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .team-card__img {
+      width: 100%; aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--navy-mid), var(--navy-lite));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+    }
+    .team-card__body { padding: 1.3rem; }
+    .team-card__name { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; color: var(--navy); }
+    .team-card__role { font-size: .78rem; color: var(--gold); font-weight: 600; letter-spacing: .06em; margin-top: .25rem; }
+    .team-card__bio { font-size: .82rem; color: var(--muted); margin-top: .6rem; line-height: 1.65; }
+
+    /* ─── COURSES ────────────────────────────────────────────── */
+    .courses-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; margin-bottom: 3.5rem; }
+    .course-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; }
+    .course-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .25s, box-shadow .25s;
+      display: flex; flex-direction: column;
+    }
+    .course-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+    .course-card__top {
+      padding: 2rem 1.8rem 1.5rem;
+      background: linear-gradient(135deg, var(--navy), var(--navy-lite));
+      position: relative; overflow: hidden;
+    }
+    .course-card__top::after {
+      content: '';
+      position: absolute; bottom: -30px; right: -30px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(200,151,58,.15);
+    }
+    .course-card__icon { font-size: 2.2rem; margin-bottom: .8rem; }
+    .course-card__level {
+      font-size: .68rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--gold); background: rgba(200,151,58,.15);
+      display: inline-block; padding: .25rem .7rem; border-radius: 20px;
+    }
+    .course-card__title { font-family: var(--serif); font-size: 1.2rem; color: var(--white); margin-top: .6rem; line-height: 1.3; }
+    .course-card__body { padding: 1.5rem 1.8rem; flex: 1; }
+    .course-card__desc { font-size: .85rem; color: var(--muted); line-height: 1.7; }
+    .course-card__features { margin-top: 1.2rem; display: flex; flex-direction: column; gap: .5rem; }
+    .course-card__feat { display: flex; align-items: center; gap: .5rem; font-size: .82rem; color: var(--text); }
+    .course-card__feat::before { content: '✓'; color: var(--gold); font-weight: 700; }
+    .course-card__footer {
+      padding: 1.2rem 1.8rem;
+      border-top: 1px solid rgba(0,0,0,.06);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .course-card__duration { font-size: .78rem; color: var(--muted); }
+    .course-card__cta {
+      font-size: .8rem; font-weight: 600; color: var(--gold);
+      display: flex; align-items: center; gap: .3rem;
+      transition: gap .2s;
+    }
+    .course-card:hover .course-card__cta { gap: .6rem; }
+
+    /* AI BANNER */
+    .ai-banner {
+      margin-top: 3.5rem;
+      background: linear-gradient(135deg, var(--navy), var(--navy-lite));
+      border: 1px solid rgba(200,151,58,.3);
+      border-radius: 14px;
+      padding: 2.5rem 2.8rem;
+      display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center;
+    }
+    .ai-banner__title { font-family: var(--serif); font-size: 1.4rem; color: var(--white); }
+    .ai-banner__text { font-size: .88rem; color: rgba(255,255,255,.65); margin-top: .5rem; line-height: 1.7; }
+    .ai-features { display: flex; gap: 2rem; margin-top: 1.2rem; flex-wrap: wrap; }
+    .ai-feat { display: flex; align-items: center; gap: .5rem; font-size: .82rem; color: rgba(255,255,255,.75); }
+    .ai-feat-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    /* ─── PRICING ────────────────────────────────────────────── */
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3.5rem; }
+    .price-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 2.2rem 2rem;
+      position: relative;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .price-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .price-card--featured {
+      border-color: var(--gold);
+      background: var(--navy);
+      color: var(--white);
+    }
+    .price-card__badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: var(--navy);
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: .3rem .9rem; border-radius: 20px;
+    }
+    .price-card__plan { font-size: .72rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+    .price-card__price {
+      font-family: var(--serif); font-size: 2.8rem; font-weight: 700;
+      color: var(--navy); margin-top: .5rem; line-height: 1;
+    }
+    .price-card--featured .price-card__price { color: var(--white); }
+    .price-card__period { font-size: .82rem; color: var(--muted); }
+    .price-card--featured .price-card__period { color: rgba(255,255,255,.55); }
+    .price-card__desc { font-size: .85rem; color: var(--muted); margin-top: .7rem; line-height: 1.6; }
+    .price-card--featured .price-card__desc { color: rgba(255,255,255,.6); }
+    .price-card__divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .price-card--featured .price-card__divider { border-color: rgba(255,255,255,.12); }
+    .price-card__items { display: flex; flex-direction: column; gap: .75rem; }
+    .price-card__item { display: flex; align-items: center; gap: .6rem; font-size: .85rem; color: var(--text); }
+    .price-card--featured .price-card__item { color: rgba(255,255,255,.82); }
+    .price-card__check { color: var(--gold); font-weight: 700; }
+    .price-card__footer { margin-top: 2rem; }
+    .faq { margin-top: 5rem; }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 1.4rem 0;
+    }
+    .faq-q {
+      font-weight: 600; font-size: .95rem; color: var(--navy);
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .faq-q::after { content: '+'; font-size: 1.3rem; color: var(--gold); }
+    .faq-a { font-size: .87rem; color: var(--muted); margin-top: .8rem; line-height: 1.75; max-width: 680px; }
+
+    /* ─── CONTACT ────────────────────────────────────────────── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 72px; align-items: start; }
+    .contact-info__item { display: flex; gap: 1rem; align-items: flex-start; margin-top: 2rem; }
+    .contact-info__icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(200,151,58,.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .contact-info__label { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+    .contact-info__value { font-size: .9rem; color: var(--text); margin-top: .2rem; line-height: 1.55; }
+    .contact-form {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form-group { margin-bottom: 1.4rem; }
+    .form-label { font-size: .78rem; font-weight: 600; letter-spacing: .06em; color: var(--navy); display: block; margin-bottom: .45rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      font-family: var(--sans); font-size: .9rem;
+      padding: .8rem 1rem;
+      border: 1.5px solid #DDE3EA;
+      border-radius: var(--r);
+      background: var(--cream);
+      color: var(--text);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(200,151,58,.12);
+    }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .form-submit { width: 100%; padding: 1rem; font-size: .95rem; }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    .footer {
+      background: #070F1C;
+      color: rgba(255,255,255,.6);
+      padding: 64px 28px 32px;
+    }
+    .footer__inner { max-width: 1160px; margin: 0 auto; }
+    .footer__top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .footer__brand-name { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; color: var(--white); }
+    .footer__brand-tag { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-top: .2rem; }
+    .footer__brand-desc { font-size: .82rem; line-height: 1.7; margin-top: 1rem; max-width: 260px; }
+    .footer__col-title { font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+    .footer__link { font-size: .83rem; color: rgba(255,255,255,.55); display: block; margin-bottom: .65rem; transition: color .2s; cursor: pointer; }
+    .footer__link:hover { color: var(--gold); }
+    .footer__bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 1.8rem; font-size: .78rem; flex-wrap: wrap; gap: 1rem; }
+    .footer__copy-gold { color: var(--gold); }
+
+    /* ─── MOBILE ─────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav__links { display: none; flex-direction: column; position: absolute; top: 72px; left: 0; right: 0; background: var(--navy); padding: 1.5rem 28px; gap: 1.2rem; }
+      .nav__links.open { display: flex; }
+      .nav__hamburger { display: flex; }
+      .hero__content { grid-template-columns: 1fr; gap: 3rem; }
+      .hero__visual { display: none; }
+      .hero__stats { grid-template-columns: repeat(3,1fr); }
+      .about-grid, .contact-grid, .courses-intro { grid-template-columns: 1fr; gap: 2.5rem; }
+      .course-grid, .pricing-grid, .team-grid { grid-template-columns: 1fr; }
+      .footer__top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .ai-banner { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVIGATION ─────────────────────────────────────── -->
+  <nav class="nav" id="mainNav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="#" onclick="showPage('home')">
+        <span class="nav__logo-name">Apex GlobalBridge</span>
+        <span class="nav__logo-tag">Consulting</span>
+      </a>
+      <ul class="nav__links" id="navLinks">
+        <li><a class="nav__link active" href="#" onclick="showPage('home');setActive(this)" data-i18n="nav_home">Home</a></li>
+        <li><a class="nav__link" href="#" onclick="showPage('about');setActive(this)" data-i18n="nav_about">About</a></li>
+        <li><a class="nav__link" href="#" onclick="showPage('courses');setActive(this)" data-i18n="nav_courses">Courses</a></li>
+        <li><a class="nav__link" href="#" onclick="showPage('pricing');setActive(this)" data-i18n="nav_pricing">Pricing</a></li>
+        <li><a class="nav__link" href="#" onclick="showPage('contact');setActive(this)" data-i18n="nav_contact">Contact</a></li>
+        <li><a class="nav__link" href="#" onclick="showPage('workwithus');setActive(this)" data-i18n="nav_workwithus">Work With Us</a></li>
+        <li class="nav__cta"><a class="btn btn--gold" href="#" onclick="showPage('contact');return false;" data-i18n="nav_cta">Get Started</a></li>
+      </ul>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-left:1rem">
+        <button onclick="setLang('en')" id="flag-en" title="English" style="background:none;border:2px solid var(--gold);border-radius:6px;padding:.2rem .4rem;cursor:pointer;font-size:1.3rem;opacity:1;transition:opacity .2s">🇺🇸</button>
+        <button onclick="setLang('es')" id="flag-es" title="Español" style="background:none;border:2px solid transparent;border-radius:6px;padding:.2rem .4rem;cursor:pointer;font-size:1.3rem;opacity:.55;transition:opacity .2s">🇨🇴</button>
+      </div>
+      <div class="nav__hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PAGE: HOME                                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="page active" id="page-home">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero__bg"></div>
+      <div class="hero__grid"></div>
+      <div class="hero__content">
+        <div>
+          <p class="label hero__eyebrow" data-i18n="hero_eyebrow">Professional Business English Training</p>
+          <h1 class="hero__title" data-i18n="hero_title">Your Bridge from<br><em>LATAM</em> to the World</h1>
+          <p class="hero__sub" data-i18n="hero_sub">AI-powered English training built for ambitious professionals across Latin America ready to lead, negotiate, and grow in global markets.</p>
+          <div class="hero__actions">
+            <a class="btn btn--gold" href="#" onclick="showPage('courses');return false;" data-i18n="hero_btn1">Explore Courses ›</a>
+            <a class="btn btn--outline" href="#" onclick="showPage('about');return false;" data-i18n="hero_btn2">Our Approach</a>
+          </div>
+          <div class="hero__stats">
+            <div>
+              <div class="hero__stat-num">2,400+</div>
+              <div class="hero__stat-label" data-i18n="hero_stat1">Professionals Trained</div>
+            </div>
+            <div>
+              <div class="hero__stat-num">18</div>
+              <div class="hero__stat-label" data-i18n="hero_stat2">Countries Reached</div>
+            </div>
+            <div>
+              <div class="hero__stat-num">96%</div>
+              <div class="hero__stat-label" data-i18n="hero_stat3">Client Satisfaction</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero__visual">
+          <div class="hero__card">
+            <p class="hero__card-title" data-i18n="hero_card_title">What You'll Master</p>
+            <div class="hero__card-item"><div class="hero__card-icon">💼</div><span data-i18n="hero_item1">Business Negotiations in English</span></div>
+            <div class="hero__card-item"><div class="hero__card-icon">🎤</div><span data-i18n="hero_item2">Executive Presentations & Pitches</span></div>
+            <div class="hero__card-item"><div class="hero__card-icon">✉️</div><span data-i18n="hero_item3">Professional Correspondence</span></div>
+            <div class="hero__card-item"><div class="hero__card-icon">🤖</div><span data-i18n="hero_item4">AI-Assisted Learning Path</span></div>
+            <div class="hero__card-item"><div class="hero__card-icon">🌐</div><span data-i18n="hero_item5">Cross-Cultural Communication</span></div>
+          </div>
+          <div class="hero__badge">🏆 Top Rated<br>LATAM 2024</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE STRIP -->
+    <div class="strip">
+      <div class="strip__track">
+        <span class="strip__item">Business English</span><span class="strip__dot">◆</span>
+        <span class="strip__item">AI-Powered Learning</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Executive Coaching</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Career Development</span><span class="strip__dot">◆</span>
+        <span class="strip__item">LATAM to Global</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Corporate Training</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Business English</span><span class="strip__dot">◆</span>
+        <span class="strip__item">AI-Powered Learning</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Executive Coaching</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Career Development</span><span class="strip__dot">◆</span>
+        <span class="strip__item">LATAM to Global</span><span class="strip__dot">◆</span>
+        <span class="strip__item">Corporate Training</span><span class="strip__dot">◆</span>
+      </div>
+    </div>
+
+    <!-- WHY US -->
+    <section class="section section--white">
+      <div class="container">
+        <div style="text-align:center;max-width:620px;margin:0 auto 3.5rem">
+          <p class="label" data-i18n="why_label">Why Apex GlobalBridge</p>
+          <h2 class="h2" data-i18n="why_title">Built for Latin American Professionals Who Mean Business</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+          <div style="padding:2rem;border:1px solid var(--border);border-radius:10px;background:var(--cream)">
+            <div style="font-size:2rem;margin-bottom:1rem">🧠</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--navy)" data-i18n="why1_title">AI-Powered Personalization</h3>
+            <p style="font-size:.85rem;color:var(--muted);margin-top:.6rem;line-height:1.7" data-i18n="why1_text">Adaptive learning paths that evolve with your progress. Get real-time feedback on pronunciation, grammar, and business register.</p>
+          </div>
+          <div style="padding:2rem;border:2px solid var(--gold);border-radius:10px;background:var(--navy)">
+            <div style="font-size:2rem;margin-bottom:1rem">🌎</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--white)" data-i18n="why2_title">LATAM-Specific Context</h3>
+            <p style="font-size:.85rem;color:rgba(255,255,255,.6);margin-top:.6rem;line-height:1.7" data-i18n="why2_text">Our curriculum is designed around real scenarios faced by LATAM professionals — from boardrooms to global conferences.</p>
+          </div>
+          <div style="padding:2rem;border:1px solid var(--border);border-radius:10px;background:var(--cream)">
+            <div style="font-size:2rem;margin-bottom:1rem">📈</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--navy)" data-i18n="why3_title">Measurable Career Growth</h3>
+            <p style="font-size:.85rem;color:var(--muted);margin-top:.6rem;line-height:1.7" data-i18n="why3_text">Track your progress with milestones tied to real business outcomes — salary negotiations, promotions, and international roles.</p>
+          </div>
+          <div style="padding:2rem;border:2px solid var(--gold);border-radius:10px;background:var(--navy)">
+            <div style="font-size:2rem;margin-bottom:1rem">🤝</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--white)">Networked Beyond Borders</h3>
+            <p style="font-size:.85rem;color:rgba(255,255,255,.6);margin-top:.6rem;line-height:1.7">We help you optimize your global value and talent by connecting you with the right networks, opportunities, and communities beyond your borders.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section section--dark">
+      <div class="container">
+        <div style="text-align:center;max-width:560px;margin:0 auto 3.5rem">
+          <p class="label" data-i18n="test_label">Student Voices</p>
+          <h2 class="h2 h2--light" data-i18n="test_title">Real Results from Real Professionals</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(200,151,58,.2);border-radius:12px;padding:2rem">
+            <div style="color:var(--gold);font-size:1.2rem;margin-bottom:1rem">★★★★★</div>
+            <p style="font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic">"After six months with Apex GlobalBridge, I landed a regional director role at a US multinational. The AI coach was invaluable for practicing boardroom vocabulary."</p>
+            <div style="margin-top:1.4rem;display:flex;align-items:center;gap:.8rem">
+              <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--navy-lite));display:flex;align-items:center;justify-content:center;font-size:1rem">👩</div>
+              <div>
+                <div style="font-size:.88rem;font-weight:600;color:var(--white)">Valentina Rojas</div>
+                <div style="font-size:.75rem;color:var(--gold)">Regional Director, Bogotá</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:rgba(200,151,58,.08);border:1px solid var(--gold);border-radius:12px;padding:2rem">
+            <div style="color:var(--gold);font-size:1.2rem;margin-bottom:1rem">★★★★★</div>
+            <p style="font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic">"The cross-cultural communication modules transformed how I lead international teams. My confidence in English meetings went from 40% to nearly 100%."</p>
+            <div style="margin-top:1.4rem;display:flex;align-items:center;gap:.8rem">
+              <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy-lite),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1rem">👨</div>
+              <div>
+                <div style="font-size:.88rem;font-weight:600;color:var(--white)">Carlos Mendoza</div>
+                <div style="font-size:.75rem;color:var(--gold)">VP Operations, México City</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(200,151,58,.2);border-radius:12px;padding:2rem">
+            <div style="color:var(--gold);font-size:1.2rem;margin-bottom:1rem">★★★★★</div>
+            <p style="font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.75;font-style:italic">"My company enrolled our entire leadership team. The ROI has been extraordinary — our US partnership negotiations are now smooth and successful."</p>
+            <div style="margin-top:1.4rem;display:flex;align-items:center;gap:.8rem">
+              <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--navy));display:flex;align-items:center;justify-content:center;font-size:1rem">👩</div>
+              <div>
+                <div style="font-size:.88rem;font-weight:600;color:var(--white)">Ana Fernández</div>
+                <div style="font-size:.75rem;color:var(--gold)">CEO, São Paulo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:3rem">
+          <a class="btn btn--gold" href="#" onclick="showPage('courses');return false;">Start Your Journey ›</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPANIES -->
+    <section class="section section--white">
+      <div class="container" style="text-align:center">
+        <p class="label" style="margin-bottom:2rem" data-i18n="companies_label">Trusted by Leading Organizations Across LATAM</p>
+        <div style="display:flex;justify-content:center;gap:3.5rem;flex-wrap:wrap;align-items:center;opacity:.55">
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Bancolombia</div>
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Grupo Éxito</div>
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Cemex</div>
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Copa Airlines</div>
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Falabella</div>
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Petrobras</div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-home -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PAGE: ABOUT                                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-about">
+    <div style="height:72px;background:var(--navy)"></div>
+
+    <section class="section section--white" style="padding:0">
+      <div style="display:grid;grid-template-columns:1fr 1fr;min-height:100vh">
+        <!-- LEFT - Full height photo -->
+        <div style="position:sticky;top:72px;height:calc(100vh - 72px);overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1522083165195-3424ed129620?w=1200&q=85" alt="New York City Skyline" style="width:100%;height:100%;object-fit:cover;display:block;" />
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(11,31,58,.95));padding:2rem 2.5rem">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;font-weight:700;color:white;line-height:1.1">Apex GlobalBridge</div>
+            <div style="font-family:'Jost',Arial,sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#C8973A;margin-top:.3rem">Consulting</div>
+            <div style="font-family:'Jost',Arial,sans-serif;font-size:.75rem;color:rgba(255,255,255,.65);margin-top:.4rem;letter-spacing:.06em">Your Bridge from LATAM to the World</div>
+          </div>
+        </div>
+        <!-- RIGHT - Content -->
+        <div style="padding:64px 48px;overflow-y:auto;display:flex;flex-direction:column;justify-content:center">
+          <div>
+            <p class="label">About Apex GlobalBridge Consulting</p>
+            <h2 class="h2" style="font-size:clamp(1.5rem,2.5vw,2rem);margin-top:.4rem">We Are Your Strategic Bridge to Global Success</h2>
+            <p class="lead">Apex GlobalBridge Consulting was founded with a singular mission: to eliminate the language barriers that prevent Latin America's most talented professionals from reaching their full potential in the global marketplace.</p>
+            <p style="font-size:.9rem;color:var(--muted);line-height:1.8;margin-top:1rem">We combine world-class Business English instruction, executive communication coaching, and cutting-edge AI technology to deliver learning experiences that are personalized, practical, and measurable. Our programs are designed to help professionals communicate with confidence, lead international teams, excel in high-stakes meetings, and unlock new career opportunities.</p>
+            <p style="font-size:.9rem;color:var(--muted);line-height:1.8;margin-top:1rem">Our team of certified language trainers, business professionals, and technology specialists works together to create transformational learning experiences that bridge the gap between local talent and global success.</p>
+            <p style="font-size:.9rem;color:var(--muted);line-height:1.8;margin-top:1rem">At Apex GlobalBridge Consulting, we don't simply teach English — we develop the communication skills, executive presence, and cross-cultural competence required to thrive in today's international business environment.</p>
+            <p style="font-size:.9rem;color:var(--muted);line-height:1.8;margin-top:1rem">As our clients progress and become qualified for international opportunities, we also offer career mobility support services, including professional resume optimization, interview preparation, international job search guidance, and introductions to our network of international executive recruiters and headhunters. For clients pursuing opportunities abroad, we provide visa application preparation support and document organization assistance, helping them navigate the administrative requirements associated with global career advancement. While we do not provide legal advice or immigration representation, we work alongside qualified professionals when specialized legal services are required.</p>
+
+            <!-- Vision / Mission / Promise -->
+            <div style="display:grid;grid-template-columns:1fr;gap:1rem;margin-top:2rem">
+              <div style="padding:1.2rem 1.5rem;background:var(--navy);border-left:4px solid var(--gold);border-radius:0 8px 8px 0">
+                <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Our Vision</div>
+                <p style="font-size:.88rem;color:rgba(255,255,255,.8);margin-top:.4rem;line-height:1.7">To become Latin America's leading partner in professional English development and global career mobility, helping ambitious individuals and organizations connect with international opportunities and compete at the highest level.</p>
+              </div>
+              <div style="padding:1.2rem 1.5rem;background:var(--cream);border-left:4px solid var(--gold);border-radius:0 8px 8px 0">
+                <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Our Mission</div>
+                <p style="font-size:.88rem;color:var(--muted);margin-top:.4rem;line-height:1.7">To empower professionals with the communication skills, cultural intelligence, and career development resources necessary to succeed in the global economy.</p>
+              </div>
+              <div style="padding:1.2rem 1.5rem;background:var(--navy);border-left:4px solid var(--gold);border-radius:0 8px 8px 0">
+                <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Our Promise</div>
+                <p style="font-size:.88rem;color:rgba(255,255,255,.8);margin-top:.4rem;line-height:1.7;font-style:italic;font-weight:600">Practical Learning. Measurable Progress. Global Opportunities.</p>
+              </div>
+            </div>
+
+            <!-- Core Services -->
+            <div style="margin-top:2rem">
+              <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Our Core Services</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Business English Training</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Executive Communication Coaching</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Presentation & Public Speaking</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Negotiation & Persuasion in English</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Cross-Cultural Leadership Training</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Professional Writing & Correspondence</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> AI-Powered Language Development</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> International Career Preparation</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Resume & LinkedIn Optimization</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Interview Preparation for Global Employers</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> International Recruiter Network Access</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Visa Application Preparation Support</div>
+                <div style="font-size:.82rem;color:var(--text);display:flex;align-items:center;gap:.5rem"><span style="color:var(--gold);font-weight:700">›</span> Global Mobility Guidance</div>
+              </div>
+            </div>
+
+            <!-- Closing statement -->
+            <div style="margin-top:2rem;padding:1.3rem 1.5rem;background:linear-gradient(135deg,var(--navy),var(--navy-lite));border-radius:10px;border:1px solid rgba(200,151,58,.3)">
+              <p style="font-size:.9rem;color:rgba(255,255,255,.85);line-height:1.75;font-style:italic">From English Fluency to Global Opportunity. Apex GlobalBridge Consulting helps Latin American professionals develop the language, communication, and career readiness needed to succeed on the international stage.</p>
+            </div>
+          </div>
+        </div><!-- /right content -->
+      </div><!-- /full-height grid -->
+    </section>
+
+    <!-- PERRY FULL BIO -->
+    <section class="section section--cream">
+      <div class="container">
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:64px;align-items:start;margin-bottom:5rem">
+          <div>
+            <div style="width:100%;aspect-ratio:1;background:linear-gradient(135deg,var(--navy-mid),var(--navy-lite));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:5rem;box-shadow:var(--shadow-lg)">👨‍💼</div>
+            <div style="margin-top:1.5rem;padding:1.2rem;background:var(--gold);border-radius:10px;text-align:center">
+              <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy)">Perry Ieropoli</div>
+              <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--navy-mid);margin-top:.3rem">Founder & Chief Educator</div>
+              <div style="font-size:.78rem;color:var(--navy-mid);margin-top:.4rem">University of Miami Graduate</div>
+              <div style="font-size:.78rem;color:var(--navy-mid)">TEFL-Certified · Multilingual</div>
+              <div style="font-size:.78rem;color:var(--navy-mid)">Former Clinical Research Project Manager</div>
+            </div>
+          </div>
+          <div>
+            <p class="label">Meet Our Founder</p>
+            <h2 class="h2">Bridging Language, Business & Opportunity</h2>
+            <p style="font-size:.92rem;color:var(--muted);line-height:1.85;margin-top:1.2rem">Perry Ieropoli is a graduate of the University of Miami with more than 15 years of real-world business experience working with professionals across diverse industries and international markets. Combining a strong business background with a passion for education and professional development, Perry specializes in helping individuals improve their English communication skills, prepare for interviews, advance their careers, and confidently navigate opportunities in today's global marketplace.</p>
+            <p style="font-size:.92rem;color:var(--muted);line-height:1.85;margin-top:1rem">As a multilingual professional and TEFL-certified English instructor, Perry understands the challenges that non-native English speakers face when pursuing international business opportunities, higher education, and career advancement. His practical approach focuses on real-world communication, business vocabulary, interview preparation, professional networking, and workplace success.</p>
+            <p style="font-size:.92rem;color:var(--muted);line-height:1.85;margin-top:1rem">Throughout his career, Perry has worked with professionals from technology, telecommunications, project management, sales, business development, logistics, and customer-facing industries — bridging the gap between academic English and the practical communication skills required in today's competitive global economy. Prior to founding Apex GlobalBridge, Perry served as a Project Manager in Clinical Research, managing complex, high-stakes projects across international teams and regulatory environments — an experience that sharpened his understanding of precision communication in global professional settings.</p>
+            <div style="margin-top:1.8rem;padding:1.5rem 1.8rem;background:var(--navy);border-left:4px solid var(--gold);border-radius:0 10px 10px 0">
+              <p style="font-size:1rem;font-style:italic;color:rgba(255,255,255,.85);line-height:1.75">"To empower professionals throughout Latin America with the language skills, confidence, and career tools needed to compete and succeed on a global stage."</p>
+              <p style="font-size:.78rem;font-weight:600;color:var(--gold);margin-top:.8rem;letter-spacing:.06em">— Perry Ieropoli, Founder</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- VISION BANNER -->
+        <div style="background:linear-gradient(135deg,var(--navy),var(--navy-lite));border:1px solid rgba(200,151,58,.3);border-radius:14px;padding:2.8rem;text-align:center;margin-bottom:5rem">
+          <p class="label" style="margin-bottom:.8rem">Our Vision</p>
+          <h3 style="font-family:var(--serif);font-size:1.8rem;font-weight:700;color:var(--white);max-width:640px;margin:0 auto;line-height:1.3">Connecting Latin America to the World Through Language, Professional Development, and Opportunity</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--white">
+      <div class="container">
+        <div style="text-align:center;max-width:560px;margin:0 auto 0">
+          <p class="label">Meet Our Team</p>
+          <h2 class="h2">Expert Trainers. Real Experience.</h2>
+          <p class="lead" style="margin:0 auto">Our instructors have worked in international business environments across the Americas, Europe, and Asia.</p>
+        </div>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-card__img">👨‍💼</div>
+            <div class="team-card__body">
+              <div class="team-card__name">Perry Ieropoli</div>
+              <div class="team-card__role">Founder & Chief Educator</div>
+              <div class="team-card__bio">Graduate of the University of Miami with 15+ years of real-world business experience across diverse industries and international markets. TEFL-certified, multilingual, and passionate about empowering LATAM professionals to compete on the global stage.</div>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-card__img">👨‍💻</div>
+            <div class="team-card__body">
+              <div class="team-card__name">Rodrigo Castillo</div>
+              <div class="team-card__role">AI Learning Director</div>
+              <div class="team-card__bio">NLP researcher and former tech lead who designed adaptive learning systems used by Fortune 500 companies in LATAM.</div>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-card__img">👩‍🏫</div>
+            <div class="team-card__body">
+              <div class="team-card__name">Isabella Torres</div>
+              <div class="team-card__role">Corporate Programs Lead</div>
+              <div class="team-card__bio">Bilingual executive coach with deep experience in cross-cultural business negotiations across 12 countries.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--dark">
+      <div class="container" style="text-align:center">
+        <p class="label">Our Numbers Speak</p>
+        <h2 class="h2 h2--light" style="max-width:500px;margin:0 auto 3.5rem">A Decade of Building Global Professionals</h2>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2rem">
+          <div><div style="font-family:var(--serif);font-size:2.8rem;font-weight:700;color:var(--gold)">2,400+</div><div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.4rem">Professionals Trained</div></div>
+          <div><div style="font-family:var(--serif);font-size:2.8rem;font-weight:700;color:var(--gold)">18</div><div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.4rem">Countries Reached</div></div>
+          <div><div style="font-family:var(--serif);font-size:2.8rem;font-weight:700;color:var(--gold)">96%</div><div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.4rem">Satisfaction Rate</div></div>
+          <div><div style="font-family:var(--serif);font-size:2.8rem;font-weight:700;color:var(--gold)">120+</div><div style="font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.4rem">Corporate Partners</div></div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-about -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PAGE: COURSES                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-courses">
+    <div style="height:72px;background:var(--navy)"></div>
+
+    <section class="section section--white">
+      <div class="container">
+        <div class="courses-intro">
+          <div>
+            <p class="label">Our Programs</p>
+            <h2 class="h2">Courses Designed for the Way Professionals Learn</h2>
+          </div>
+          <div>
+            <p class="lead">Every course is built around real business scenarios — no generic ESL content. You'll practice the English you actually need in your career.</p>
+            <a class="btn btn--navy" style="margin-top:1.5rem" href="#" onclick="showPage('contact');return false;">Corporate Enrollment ›</a>
+          </div>
+        </div>
+        <div class="course-grid">
+          <div class="course-card">
+            <div class="course-card__top" style="background:url('https://images.unsplash.com/photo-1630507014029-82ef6b57e96e?w=600&q=80') center/cover no-repeat;position:relative;min-height:130px;">
+              <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,31,58,.65),rgba(30,61,110,.55));border-radius:0"></div>
+              <div style="position:relative;z-index:1">
+              <span class="course-card__level">Intermediate – Advanced</span>
+              <h3 class="course-card__title">Business English Foundations</h3>
+              </div>
+            </div>
+            <div class="course-card__body">
+              <p class="course-card__desc">Master the core vocabulary, grammar, and tone needed to communicate professionally in English at work.</p>
+              <div style="margin-bottom:1rem;padding:.9rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy)">📅 2 × 90-minute live sessions per week</div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-top:.4rem">⏳ Total Instruction: 36 hours</div>
+              </div>
+              <div class="course-card__features">
+                <div class="course-card__feat">Email & report writing</div>
+                <div class="course-card__feat">Meeting participation skills</div>
+                <div class="course-card__feat">Professional vocabulary builder</div>
+                <div class="course-card__feat">AI pronunciation coach</div>
+              </div>
+            </div>
+            <div class="course-card__footer">
+              <span class="course-card__duration">⏱ 12 weeks · Live + async</span>
+              <span class="course-card__cta">Enroll →</span>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card__top" style="background:linear-gradient(135deg,#1a3a60,var(--gold));">
+              <div class="course-card__icon">🎤</div>
+              <span class="course-card__level">Advanced</span>
+              <h3 class="course-card__title">Executive Presence & Presentations</h3>
+            </div>
+            <div class="course-card__body">
+              <p class="course-card__desc">Lead board meetings, deliver keynotes, and present to global stakeholders with authority and clarity.</p>
+              <div style="margin-bottom:1rem;padding:.9rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy)">📅 2 × 90-minute live sessions per week</div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-top:.4rem">⏳ Total Instruction: 24 hours</div>
+              </div>
+              <div class="course-card__features">
+                <div class="course-card__feat">Keynote & pitch structure</div>
+                <div class="course-card__feat">Body language & voice work</div>
+                <div class="course-card__feat">Q&A handling strategies</div>
+                <div class="course-card__feat">Video practice with AI feedback</div>
+              </div>
+            </div>
+            <div class="course-card__footer">
+              <span class="course-card__duration">⏱ 8 weeks · Intensive</span>
+              <span class="course-card__cta">Enroll →</span>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card__top">
+              <div class="course-card__icon">🤝</div>
+              <span class="course-card__level">All Levels</span>
+              <h3 class="course-card__title">Negotiation & Persuasion in English</h3>
+            </div>
+            <div class="course-card__body">
+              <p class="course-card__desc">Close deals, navigate conflict, and build international partnerships through strategic English communication.</p>
+              <div style="margin-bottom:1rem;padding:.9rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy)">📅 2 × 90-minute live sessions per week</div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-top:.4rem">⏳ Total Instruction: 24 hours</div>
+              </div>
+              <div class="course-card__features">
+                <div class="course-card__feat">Negotiation frameworks</div>
+                <div class="course-card__feat">Cross-cultural tactics</div>
+                <div class="course-card__feat">Role-play simulations</div>
+                <div class="course-card__feat">Live case studies</div>
+              </div>
+            </div>
+            <div class="course-card__footer">
+              <span class="course-card__duration">⏱ 8 weeks · Blended</span>
+              <span class="course-card__cta">Enroll →</span>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card__top">
+              <div class="course-card__icon">✉️</div>
+              <span class="course-card__level">Beginner – Intermediate</span>
+              <h3 class="course-card__title">Professional Writing Mastery</h3>
+            </div>
+            <div class="course-card__body">
+              <p class="course-card__desc">Write emails, proposals, and reports that impress — clear, concise, and perfectly calibrated for international readers.</p>
+              <div style="margin-bottom:1rem;padding:.9rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy)">📅 2 × 90-minute live sessions per week</div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-top:.4rem">⏳ Total Instruction: 24 hours</div>
+              </div>
+              <div class="course-card__features">
+                <div class="course-card__feat">Executive email templates</div>
+                <div class="course-card__feat">Proposal & report writing</div>
+                <div class="course-card__feat">AI grammar & style coach</div>
+                <div class="course-card__feat">Tone calibration for context</div>
+              </div>
+            </div>
+            <div class="course-card__footer">
+              <span class="course-card__duration">⏱ 8 weeks · Blended</span>
+              <span class="course-card__cta">Enroll →</span>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card__top" style="background:linear-gradient(135deg,#1a3a60,var(--gold));">
+              <div class="course-card__icon">🌐</div>
+              <span class="course-card__level">Advanced</span>
+              <h3 class="course-card__title">Cross-Cultural Leadership</h3>
+            </div>
+            <div class="course-card__body">
+              <p class="course-card__desc">Navigate US, European, and Asian business cultures with confidence while leading diverse international teams.</p>
+              <div style="margin-bottom:1rem;padding:.9rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy)">📅 2 × 90-minute live sessions per week</div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-top:.4rem">⏳ Total Instruction: 24 hours</div>
+              </div>
+              <div class="course-card__features">
+                <div class="course-card__feat">Cultural intelligence (CQ) tools</div>
+                <div class="course-card__feat">Remote international team dynamics</div>
+                <div class="course-card__feat">Conflict resolution strategies</div>
+                <div class="course-card__feat">Real case immersions</div>
+              </div>
+            </div>
+            <div class="course-card__footer">
+              <span class="course-card__duration">⏱ 8 weeks · Blended</span>
+              <span class="course-card__cta">Enroll →</span>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card__top">
+              <div class="course-card__icon">🚀</div>
+              <span class="course-card__level">All Levels</span>
+              <h3 class="course-card__title">Career Accelerator Program</h3>
+            </div>
+            <div class="course-card__body">
+              <p class="course-card__desc">Our flagship 24-week program combining all tracks plus 1:1 coaching, designed for ambitious professionals targeting global roles.</p>
+              <div style="margin-bottom:1rem;padding:.9rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy)">📅 2 × 90-minute live sessions per week</div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--navy);margin-top:.4rem">⏳ Total Instruction: 72 hours</div>
+              </div>
+              <div class="course-card__features">
+                <div class="course-card__feat">All 5 course tracks included</div>
+                <div class="course-card__feat">Monthly 1:1 executive coaching (2 hours)</div>
+                <div class="course-card__feat">Job interview simulations</div>
+                <div class="course-card__feat">Alumni network access</div>
+              </div>
+            </div>
+            <div class="course-card__footer">
+              <span class="course-card__duration">⏱ 24 weeks · Full program</span>
+              <span class="course-card__cta">Enroll →</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-banner">
+          <div>
+            <h3 class="ai-banner__title">🤖 Powered by AI Learning Technology</h3>
+            <p class="ai-banner__text">Every course integrates our proprietary AI engine — providing real-time pronunciation analysis, grammar coaching, personalized vocabulary recommendations, and adaptive difficulty adjustment based on your progress.</p>
+            <div class="ai-features">
+              <div class="ai-feat"><span class="ai-feat-dot"></span>Real-time Pronunciation Scoring</div>
+              <div class="ai-feat"><span class="ai-feat-dot"></span>Adaptive Learning Path</div>
+              <div class="ai-feat"><span class="ai-feat-dot"></span>24/7 AI Practice Partner</div>
+              <div class="ai-feat"><span class="ai-feat-dot"></span>Progress Analytics Dashboard</div>
+            </div>
+          </div>
+          <div>
+            <a class="btn btn--gold" href="#" onclick="showPage('pricing');return false;">View Pricing ›</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- /page-courses -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PAGE: PRICING                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-pricing">
+    <div style="height:72px;background:var(--navy)"></div>
+
+    <section class="section section--white">
+      <div class="container">
+        <div style="text-align:center;max-width:580px;margin:0 auto">
+          <p class="label" data-i18n="pricing_label">Transparent Pricing</p>
+          <h2 class="h2" data-i18n="pricing_title">Invest in Your Global Career</h2>
+          <p class="lead" style="margin:1rem auto 0" data-i18n="pricing_sub">No hidden fees. Choose the program that fits your ambitions.</p>
+        </div>
+
+        <!-- 6 PROGRAM CARDS -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3.5rem">
+
+          <!-- 1 - Business English Foundations -->
+          <div class="price-card">
+            <div class="price-card__plan">Business English Foundations</div>
+            <div class="price-card__price" style="font-size:1.8rem">$3,500,000 COP</div>
+            <div class="price-card__period">per enrollment · 12 weeks</div>
+            <p class="price-card__desc">Master core professional English vocabulary, grammar, and tone for the workplace.</p>
+            <hr class="price-card__divider" />
+            <div class="price-card__items">
+              <div class="price-card__item"><span class="price-card__check">✓</span> 2 × 60-min live sessions/week</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> 24 hours total instruction</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Email & report writing</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> AI pronunciation coach</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Progress tracking dashboard</div>
+            </div>
+            <div class="price-card__footer">
+              <a class="btn btn--navy" style="width:100%;justify-content:center" href="#" onclick="showPage('contact');return false;">Enroll Now</a>
+            </div>
+          </div>
+
+          <!-- 2 - Executive Presence -->
+          <div class="price-card price-card--featured">
+            <div class="price-card__badge">Most Popular</div>
+            <div class="price-card__plan">Executive Presence & Presentations</div>
+            <div class="price-card__price" style="font-size:1.8rem">$3,500,000 COP</div>
+            <div class="price-card__period">per enrollment · 8 weeks</div>
+            <p class="price-card__desc">Lead meetings, deliver keynotes, and present to global stakeholders with authority.</p>
+            <hr class="price-card__divider" />
+            <div class="price-card__items">
+              <div class="price-card__item"><span class="price-card__check">✓</span> 2 × 90-min live sessions/week</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> 24 hours total instruction</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Keynote & pitch structure</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Video practice with AI feedback</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Q&A handling strategies</div>
+            </div>
+            <div class="price-card__footer">
+              <a class="btn btn--gold" style="width:100%;justify-content:center" href="#" onclick="showPage('contact');return false;">Enroll Now</a>
+            </div>
+          </div>
+
+          <!-- 3 - Negotiation -->
+          <div class="price-card">
+            <div class="price-card__plan">Negotiation & Persuasion in English</div>
+            <div class="price-card__price" style="font-size:1.8rem">$3,500,000 COP</div>
+            <div class="price-card__period">per enrollment · 8 weeks</div>
+            <p class="price-card__desc">Close deals and build international partnerships through strategic English communication.</p>
+            <hr class="price-card__divider" />
+            <div class="price-card__items">
+              <div class="price-card__item"><span class="price-card__check">✓</span> 2 × 90-min live sessions/week</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> 24 hours total instruction</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Negotiation frameworks</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Role-play simulations</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Cross-cultural tactics</div>
+            </div>
+            <div class="price-card__footer">
+              <a class="btn btn--navy" style="width:100%;justify-content:center" href="#" onclick="showPage('contact');return false;">Enroll Now</a>
+            </div>
+          </div>
+
+          <!-- 4 - Professional Writing -->
+          <div class="price-card price-card--featured">
+            <div class="price-card__plan">Professional Writing Mastery</div>
+            <div class="price-card__price" style="font-size:1.8rem">$3,500,000 COP</div>
+            <div class="price-card__period">per enrollment · 8 weeks</div>
+            <p class="price-card__desc">Write emails, proposals, and reports that impress international readers and stakeholders.</p>
+            <hr class="price-card__divider" />
+            <div class="price-card__items">
+              <div class="price-card__item"><span class="price-card__check">✓</span> 2 × 90-min live sessions/week</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> 24 hours total instruction</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Executive email templates</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> AI grammar & style coach</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Proposal & report writing</div>
+            </div>
+            <div class="price-card__footer">
+              <a class="btn btn--gold" style="width:100%;justify-content:center" href="#" onclick="showPage('contact');return false;">Enroll Now</a>
+            </div>
+          </div>
+
+          <!-- 5 - Cross-Cultural Leadership -->
+          <div class="price-card">
+            <div class="price-card__plan">Cross-Cultural Leadership</div>
+            <div class="price-card__price" style="font-size:1.8rem">$3,500,000 COP</div>
+            <div class="price-card__period">per enrollment · 8 weeks</div>
+            <p class="price-card__desc">Navigate US, European, and Asian business cultures while leading diverse international teams.</p>
+            <hr class="price-card__divider" />
+            <div class="price-card__items">
+              <div class="price-card__item"><span class="price-card__check">✓</span> 2 × 90-min live sessions/week</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> 24 hours total instruction</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Cultural intelligence (CQ) tools</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Remote team dynamics</div>
+              <div class="price-card__item"><span class="price-card__check">✓</span> Real case immersions</div>
+            </div>
+            <div class="price-card__footer">
+              <a class="btn btn--navy" style="width:100%;justify-content:center" href="#" onclick="showPage('contact');return false;">Enroll Now</a>
+            </div>
+          </div>
+
+          <!-- 6 - Career Accelerator -->
+          <div class="price-card" style="border-color:var(--gold);background:linear-gradient(160deg,var(--navy),var(--navy-lite))">
+            <div class="price-card__badge" style="background:var(--gold);color:var(--navy)">Best Value</div>
+            <div class="price-card__plan">Career Accelerator Program</div>
+            <div class="price-card__price" style="color:var(--white);font-size:1.8rem">$9,500,000 COP</div>
+            <div class="price-card__period" style="color:rgba(255,255,255,.55)">per enrollment · 24 weeks · All 5 tracks</div>
+            <p class="price-card__desc" style="color:rgba(255,255,255,.65)">Our flagship program combining all 5 courses plus 1:1 coaching for professionals targeting global roles.</p>
+            <hr class="price-card__divider" style="border-color:rgba(255,255,255,.12)" />
+            <div class="price-card__items">
+              <div class="price-card__item" style="color:rgba(255,255,255,.85)"><span class="price-card__check">✓</span> All 5 course tracks included</div>
+              <div class="price-card__item" style="color:rgba(255,255,255,.85)"><span class="price-card__check">✓</span> 72 hours total instruction</div>
+              <div class="price-card__item" style="color:rgba(255,255,255,.85)"><span class="price-card__check">✓</span> Monthly 1:1 coaching (2 hours)</div>
+              <div class="price-card__item" style="color:rgba(255,255,255,.85)"><span class="price-card__check">✓</span> Job interview simulations</div>
+              <div class="price-card__item" style="color:rgba(255,255,255,.85)"><span class="price-card__check">✓</span> Alumni network access</div>
+            </div>
+            <div class="price-card__footer">
+              <a class="btn btn--gold" style="width:100%;justify-content:center" href="#" onclick="showPage('contact');return false;">Enroll Now</a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- NOTE -->
+        <div style="text-align:center;margin-top:2rem;padding:1.2rem;background:var(--cream);border-radius:10px;border:1px solid var(--border)">
+          <p style="font-size:.85rem;color:var(--muted)">💼 Looking for team or corporate pricing? <a href="#" onclick="showPage('contact');return false;" style="color:var(--gold);font-weight:600">Contact us</a> for custom group rates and tailored corporate programs.</p>
+        </div>
+
+        <div class="faq" style="max-width:720px;margin:4rem auto 0">
+          <p class="label" style="margin-bottom:1.5rem" data-i18n="faq_label">Frequently Asked Questions</p>
+          <div class="faq-item"><div class="faq-q">What is the Intake & Client Assessment fee?</div><div class="faq-a">Intake and Client Assessments are <strong>$350,000 COP</strong>, which will be deducted from the client's package purchase upon enrollment.</div></div>
+          <div class="faq-item"><div class="faq-q">Can installment payments be made for each program purchase?</div><div class="faq-a">Yes, installments can be made monthly for each purchased program.</div></div>
+          <div class="faq-item"><div class="faq-q">Do you accept payments in cryptocurrency?</div><div class="faq-a">Yes, we accept payments in BTC and ETH.</div></div>
+          <div class="faq-item"><div class="faq-q" data-i18n="faq1_q">Can I switch plans at any time?</div><div class="faq-a" data-i18n="faq1_a">Yes. You can upgrade or downgrade your plan at the start of any billing cycle. If you upgrade mid-cycle, we'll prorate the difference.</div></div>
+          <div class="faq-item"><div class="faq-q" data-i18n="faq3_q">Are sessions recorded for later review?</div><div class="faq-a" data-i18n="faq3_a">All live sessions are recorded and available for 90 days in your learning dashboard. AI coaching sessions are saved indefinitely.</div></div>
+          <div class="faq-item"><div class="faq-q" data-i18n="faq4_q">What level of English do I need to start?</div><div class="faq-a">From Intermediate to Executive-Level Fluency. We serve professionals from B1 to C2 English proficiency levels. Every client starts with a 15-minute onboarding and AI-powered assessment that evaluates speaking, vocabulary, grammar, and professional communication skills. Based on the results, we develop a personalized strategic learning roadmap focused on achieving real-world outcomes — whether that's leading meetings, delivering presentations, negotiating with confidence, or advancing your international career.</div></div>
+        </div>
+      </div>
+    </section>
+  </div><!-- /page-pricing -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PAGE: CONTACT                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-contact">
+    <div style="height:72px;background:var(--navy)"></div>
+
+    <section class="section section--white">
+      <div class="container">
+        <div class="contact-grid">
+          <div>
+            <p class="label" data-i18n="contact_label">Get in Touch</p>
+            <h2 class="h2" data-i18n="contact_title">Let's Build Your Bridge Together</h2>
+            <p class="lead">Whether you're an individual professional or a corporate team, we'd love to understand your goals and show you exactly how Apex GlobalBridge can help.</p>
+            <div class="contact-info__item">
+              <div class="contact-info__icon">📧</div>
+              <div>
+                <div class="contact-info__label">Email</div>
+                <div class="contact-info__value">
+                  <div style="margin-bottom:.5rem"><span style="font-size:.75rem;color:var(--muted)">General Inquiries / Help</span><br>contact@apexgbconsulting.com</div>
+                  <div style="margin-bottom:.5rem"><span style="font-size:.75rem;color:var(--muted)">Sales Inquiries</span><br>sales@apexgbconsulting.com</div>
+                  <div><span style="font-size:.75rem;color:var(--muted)">Corporate Inquiries</span><br>corporate@apexgbconsulting.com</div>
+                </div>
+              </div>
+            </div>
+            <div class="contact-info__item">
+              <div class="contact-info__icon">📍</div>
+              <div>
+                <div class="contact-info__label">Principal Office</div>
+                <div class="contact-info__value">Bogotá, Colombia</div>
+              </div>
+            </div>
+            <div class="contact-info__item">
+              <div class="contact-info__icon">🕒</div>
+              <div>
+                <div class="contact-info__label">Office Hours</div>
+                <div class="contact-info__value">Mon – Fri: 8:00 AM – 7:00 PM (COT)<br>Sat: 9:00 AM – 1:00 PM</div>
+              </div>
+            </div>
+          </div>
+          <div class="contact-form">
+            <h3 style="font-family:var(--serif);font-size:1.3rem;color:var(--navy);margin-bottom:1.8rem" data-i18n="form_title">Send Us a Message</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-input" placeholder="Ana" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-input" placeholder="García" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" placeholder="ana@company.com" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Company</label>
+                <input type="text" class="form-input" placeholder="Your company" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Country</label>
+                <select class="form-select">
+                  <option>Colombia</option>
+                  <option>México</option>
+                  <option>Brasil</option>
+                  <option>Argentina</option>
+                  <option>Chile</option>
+                  <option>Perú</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">I'm interested in</label>
+              <select class="form-select">
+                <option>Individual Professional Plan</option>
+                <option>Corporate / Team Training</option>
+                <option>Career Accelerator Program</option>
+                <option>General Inquiry</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-textarea" placeholder="Tell us about your goals and how we can help..."></textarea>
+            </div>
+            <button class="btn btn--gold form-submit" onclick="handleFormSubmit(this)">Send Message ›</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- /page-contact -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PAGE: WORK WITH US                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-workwithus">
+    <div style="height:72px;background:var(--navy)"></div>
+
+    <!-- HERO BANNER -->
+    <section style="background:linear-gradient(135deg,var(--navy),var(--navy-lite));padding:80px 28px;text-align:center">
+      <div style="max-width:680px;margin:0 auto">
+        <p class="label">Work With Us</p>
+        <h2 style="font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--white);margin-top:.5rem;line-height:1.2">Join the Apex GlobalBridge Team</h2>
+        <p style="font-size:1.05rem;color:rgba(255,255,255,.72);line-height:1.8;margin-top:1.2rem">We are always looking for passionate educators, business professionals, and coaches who share our mission of connecting Latin America to the world through language and opportunity.</p>
+      </div>
+    </section>
+
+    <!-- WHY JOIN US -->
+    <section class="section section--white">
+      <div class="container">
+        <div style="text-align:center;max-width:560px;margin:0 auto 3rem">
+          <p class="label">Why Join Us</p>
+          <h2 class="h2">Be Part of Something Bigger</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+          <div style="padding:2rem;border:1px solid var(--border);border-radius:10px;background:var(--cream);text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:1rem">🌍</div>
+            <h3 style="font-family:var(--serif);font-size:1.05rem;color:var(--navy)">Global Impact</h3>
+            <p style="font-size:.85rem;color:var(--muted);margin-top:.6rem;line-height:1.7">Help transform the careers of Latin America's brightest professionals and connect them to global opportunities.</p>
+          </div>
+          <div style="padding:2rem;border:2px solid var(--gold);border-radius:10px;background:var(--navy);text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:1rem">🤖</div>
+            <h3 style="font-family:var(--serif);font-size:1.05rem;color:var(--white)">Innovative Environment</h3>
+            <p style="font-size:.85rem;color:rgba(255,255,255,.65);margin-top:.6rem;line-height:1.7">Work alongside AI-powered tools and forward-thinking educators who are redefining professional language training.</p>
+          </div>
+          <div style="padding:2rem;border:1px solid var(--border);border-radius:10px;background:var(--cream);text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:1rem">📈</div>
+            <h3 style="font-family:var(--serif);font-size:1.05rem;color:var(--navy)">Grow With Us</h3>
+            <p style="font-size:.85rem;color:var(--muted);margin-top:.6rem;line-height:1.7">Be part of a fast-growing consultancy with opportunities to expand your role as we scale across Latin America and beyond.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPEN ROLES -->
+    <section class="section section--cream">
+      <div class="container">
+        <div style="text-align:center;max-width:560px;margin:0 auto 3rem">
+          <p class="label">Open Opportunities</p>
+          <h2 class="h2">Current Roles We're Hiring For</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:860px;margin:0 auto">
+          <div style="background:var(--white);border-radius:10px;padding:1.8rem;box-shadow:var(--shadow);border-left:4px solid var(--gold)">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Teaching</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--navy);margin-top:.4rem">Business English Instructor</h3>
+            <p style="font-size:.83rem;color:var(--muted);margin-top:.5rem;line-height:1.7">TEFL/CELTA certified instructors with a business background to deliver live online sessions to corporate professionals.</p>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Remote</span>
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Part-time / Full-time</span>
+            </div>
+          </div>
+          <div style="background:var(--white);border-radius:10px;padding:1.8rem;box-shadow:var(--shadow);border-left:4px solid var(--gold)">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Coaching</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--navy);margin-top:.4rem">Executive Communication Coach</h3>
+            <p style="font-size:.83rem;color:var(--muted);margin-top:.5rem;line-height:1.7">Experienced coaches to work 1:1 with senior professionals on executive presence, presentations, and cross-cultural leadership.</p>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Remote</span>
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Freelance</span>
+            </div>
+          </div>
+          <div style="background:var(--white);border-radius:10px;padding:1.8rem;box-shadow:var(--shadow);border-left:4px solid var(--gold)">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Career Services</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--navy);margin-top:.4rem">International Career Consultant</h3>
+            <p style="font-size:.83rem;color:var(--muted);margin-top:.5rem;line-height:1.7">Professionals with HR, recruiting, or career coaching experience to support clients with resume optimization, interview prep, and global job searches.</p>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Remote</span>
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Part-time</span>
+            </div>
+          </div>
+          <div style="background:var(--white);border-radius:10px;padding:1.8rem;box-shadow:var(--shadow);border-left:4px solid var(--gold)">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Technology</div>
+            <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--navy);margin-top:.4rem">AI Learning Specialist</h3>
+            <p style="font-size:.83rem;color:var(--muted);margin-top:.5rem;line-height:1.7">Tech-savvy professionals with experience in AI/NLP tools and e-learning platforms to help develop and optimize our AI-powered curriculum.</p>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Remote</span>
+              <span style="font-size:.72rem;background:var(--gold-pale);color:var(--navy);padding:.2rem .7rem;border-radius:20px;font-weight:600">Full-time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLY CTA -->
+    <section class="section section--dark">
+      <div class="container" style="text-align:center;max-width:620px;margin:0 auto">
+        <p class="label">Apply Now</p>
+        <h2 class="h2 h2--light">Don't See Your Role? We'd Still Love to Hear From You.</h2>
+        <p style="font-size:1rem;color:rgba(255,255,255,.7);line-height:1.8;margin-top:1rem">Send us your CV and a brief note about how you'd like to contribute to the Apex GlobalBridge mission. We review all applications and will be in touch if there's a fit.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;margin-top:2.5rem;flex-wrap:wrap">
+          <a class="btn btn--gold" href="mailto:contact@apexgbconsulting.com">Send Your CV ›</a>
+          <a class="btn btn--outline" href="#" onclick="showPage('contact');return false;">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-workwithus -->
+
+  <!-- ── FOOTER ──────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div>
+          <div class="footer__brand-name">Apex GlobalBridge</div>
+          <div class="footer__brand-tag">Consulting</div>
+          <p class="footer__brand-desc">Your Bridge from LATAM to the World. AI-powered Business English training for ambitious professionals.</p>
+        </div>
+        <div>
+          <div class="footer__col-title">Company</div>
+          <a class="footer__link" onclick="showPage('about')">About Us</a>
+          <a class="footer__link" onclick="showPage('about')">Our Team</a>
+          <a class="footer__link" onclick="showPage('contact')">Careers</a>
+          <a class="footer__link" onclick="showPage('contact')">Press</a>
+        </div>
+        <div>
+          <div class="footer__col-title">Programs</div>
+          <a class="footer__link" onclick="showPage('courses')">Business English</a>
+          <a class="footer__link" onclick="showPage('courses')">Executive Presence</a>
+          <a class="footer__link" onclick="showPage('courses')">Negotiation Skills</a>
+          <a class="footer__link" onclick="showPage('courses')">Corporate Training</a>
+        </div>
+        <div>
+          <div class="footer__col-title">Connect</div>
+          <a class="footer__link" onclick="showPage('contact')">Contact Us</a>
+          <a class="footer__link">LinkedIn</a>
+          <a class="footer__link">Instagram</a>
+          <a class="footer__link">WhatsApp</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span data-i18n="footer_copy">© 2026 <span class="footer__copy-gold">Apex GlobalBridge Consulting</span>. All rights reserved.</span>
+        <span data-i18n="footer_legal">Privacy Policy · Terms of Service</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── NAV SCROLL ────────────────────────────────────────
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ─── PAGE ROUTING ──────────────────────────────────────
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('navLinks').classList.remove('open');
+    }
+
+    function setActive(el) {
+      document.querySelectorAll('.nav__link').forEach(l => l.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+
+    // ─── FORM SUBMIT ───────────────────────────────────────
+    function handleFormSubmit(btn) {
+      const lang = document.documentElement.lang || 'en';
+      btn.textContent = lang === 'es' ? '✓ ¡Mensaje Enviado!' : '✓ Message Sent!';
+      btn.style.background = '#2d7a4f';
+      btn.style.borderColor = '#2d7a4f';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = lang === 'es' ? 'Enviar Mensaje ›' : 'Send Message ›';
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.disabled = false;
+      }, 4000);
+    }
+
+    // ─── INITIAL NAV SCROLLED STATE ────────────────────────
+    document.getElementById('mainNav').classList.add('scrolled');
+
+    // ─── TRANSLATIONS ──────────────────────────────────────
+    const translations = {
+      en: {
+        // NAV
+        nav_home: 'Home', nav_about: 'About', nav_courses: 'Courses',
+        nav_pricing: 'Pricing', nav_contact: 'Contact', nav_cta: 'Get Started',
+        nav_workwithus: 'Work With Us',
+
+        // HOME - HERO
+        hero_eyebrow: 'Professional Business English Training',
+        hero_title: 'Your Bridge from<br><em>LATAM</em> to the World',
+        hero_sub: 'AI-powered English training built for ambitious professionals across Latin America ready to lead, negotiate, and grow in global markets.',
+        hero_btn1: 'Explore Courses ›', hero_btn2: 'Our Approach',
+        hero_stat1: 'Professionals Trained', hero_stat2: 'Countries Reached', hero_stat3: 'Client Satisfaction',
+        hero_card_title: "What You'll Master",
+        hero_item1: 'Business Negotiations in English', hero_item2: 'Executive Presentations & Pitches',
+        hero_item3: 'Professional Correspondence', hero_item4: 'AI-Assisted Learning Path',
+        hero_item5: 'Cross-Cultural Communication',
+        hero_badge: '🏆 Top Rated<br>LATAM 2024',
+
+        // HOME - WHY US
+        why_label: 'Why Apex GlobalBridge',
+        why_title: 'Built for Latin American Professionals Who Mean Business',
+        why1_title: 'AI-Powered Personalization', why1_text: 'Adaptive learning paths that evolve with your progress. Get real-time feedback on pronunciation, grammar, and business register.',
+        why2_title: 'LATAM-Specific Context', why2_text: "Our curriculum is designed around real scenarios faced by LATAM professionals — from boardrooms to global conferences.",
+        why3_title: 'Measurable Career Growth', why3_text: 'Track your progress with milestones tied to real business outcomes — salary negotiations, promotions, and international roles.',
+
+        // HOME - TESTIMONIALS
+        test_label: 'Student Voices', test_title: 'Real Results from Real Professionals',
+        test1: '"After six months with Apex GlobalBridge, I landed a regional director role at a US multinational. The AI coach was invaluable for practicing boardroom vocabulary."',
+        test1_name: 'Valentina Rojas', test1_role: 'Regional Director, Bogotá',
+        test2: '"The cross-cultural communication modules transformed how I lead international teams. My confidence in English meetings went from 40% to nearly 100%."',
+        test2_name: 'Carlos Mendoza', test2_role: 'VP Operations, México City',
+        test3: '"My company enrolled our entire leadership team. The ROI has been extraordinary — our US partnership negotiations are now smooth and successful."',
+        test3_name: 'Ana Fernández', test3_role: 'CEO, São Paulo',
+        test_cta: 'Start Your Journey ›',
+
+        // HOME - COMPANIES
+        companies_label: 'Trusted by Leading Organizations Across LATAM',
+
+        // ABOUT
+        about_label: 'Who We Are', about_title: 'We Are Your Strategic Bridge to Global Success',
+        about_p1: 'Apex GlobalBridge Consulting was founded with a singular mission: to eliminate the language barrier holding back LATAM\'s most talented professionals from reaching global leadership.',
+        about_p2: 'We combine deep expertise in corporate English training with cutting-edge AI technology to deliver learning experiences that are personal, practical, and powerful.',
+        about_v1_title: 'Mission-Driven', about_v1_text: 'Every program is built around your professional goals, not just language scores.',
+        about_v2_title: 'AI-Augmented', about_v2_text: "Technology amplifies our trainers' expertise for faster, deeper results.",
+        about_v3_title: 'LATAM-Rooted', about_v3_text: 'We understand the cultural and business context you come from.',
+        about_v4_title: 'Results-Focused', about_v4_text: 'We measure success in promotions, deals, and career breakthroughs.',
+        team_label: 'Meet Our Team', team_title: 'Expert Trainers. Real Experience.',
+        team_sub: 'Our instructors have worked in international business environments across the Americas, Europe, and Asia.',
+        stats_label: 'Our Numbers Speak', stats_title: 'A Decade of Building Global Professionals',
+        stat_l1: 'Professionals Trained', stat_l2: 'Countries Reached', stat_l3: 'Satisfaction Rate', stat_l4: 'Corporate Partners',
+
+        // COURSES
+        courses_label: 'Our Programs', courses_title: 'Courses Designed for the Way Professionals Learn',
+        courses_sub: "Every course is built around real business scenarios — no generic ESL content. You'll practice the English you actually need in your career.",
+        courses_corp_btn: 'Corporate Enrollment ›',
+        ai_title: '🤖 Powered by AI Learning Technology',
+        ai_text: 'Every course integrates our proprietary AI engine — providing real-time pronunciation analysis, grammar coaching, personalized vocabulary recommendations, and adaptive difficulty adjustment.',
+        ai_f1: 'Real-time Pronunciation Scoring', ai_f2: 'Adaptive Learning Path', ai_f3: '24/7 AI Practice Partner', ai_f4: 'Progress Analytics Dashboard',
+        ai_btn: 'View Pricing ›',
+
+        // PRICING
+        pricing_label: 'Transparent Pricing', pricing_title: 'Invest in Your Global Career',
+        pricing_sub: 'No hidden fees. No long-term lock-ins. Choose the plan that fits your ambitions.',
+        plan1: 'Essential', plan1_period: 'per month · billed monthly', plan1_desc: 'For professionals starting their global English journey with self-paced learning.',
+        plan2: 'Professional', plan2_badge: 'Most Popular', plan2_period: 'per month · billed monthly', plan2_desc: 'For ambitious professionals ready to accelerate their international career trajectory.',
+        plan3: 'Corporate', plan3_price: 'Custom', plan3_period: 'per team · tailored scope', plan3_desc: 'For organizations investing in their leadership teams with custom programs and reporting.',
+        btn_started: 'Get Started', btn_sales: 'Contact Sales',
+        faq_label: 'Frequently Asked Questions',
+        faq1_q: 'Can I switch plans at any time?', faq1_a: 'Yes. You can upgrade or downgrade your plan at the start of any billing cycle. If you upgrade mid-cycle, we\'ll prorate the difference.',
+        faq2_q: 'Do you offer a free trial?', faq2_a: 'We offer a 7-day free trial for both Essential and Professional plans. No credit card required. Corporate clients receive a complimentary pilot session for up to 5 team members.',
+        faq3_q: 'Are sessions recorded for later review?', faq3_a: 'All live sessions are recorded and available for 90 days in your learning dashboard. AI coaching sessions are saved indefinitely.',
+        faq4_q: 'What level of English do I need to start?', faq4_a: 'We accept students from A2 (elementary) through C1 (advanced). Our AI assessment tool places you in the right track after a 15-minute onboarding session.',
+
+        // CONTACT
+        contact_label: 'Get in Touch', contact_title: "Let's Build Your Bridge Together",
+        contact_sub: "Whether you're an individual professional or a corporate team, we'd love to understand your goals and show you exactly how Apex GlobalBridge can help.",
+        contact_email_label: 'Email', contact_phone_label: 'Phone / WhatsApp', contact_address_label: 'Principal Office', contact_hours_label: 'Office Hours',
+        contact_hours_val: 'Mon – Fri: 8:00 AM – 7:00 PM (COT)<br>Sat: 9:00 AM – 1:00 PM',
+        form_title: 'Send Us a Message',
+        form_fname: 'First Name', form_lname: 'Last Name', form_email: 'Email Address',
+        form_company: 'Company', form_country: 'Country', form_interest: "I'm interested in",
+        form_msg: 'Message', form_msg_ph: 'Tell us about your goals and how we can help...',
+        form_submit: 'Send Message ›',
+        interest1: 'Individual Professional Plan', interest2: 'Corporate / Team Training',
+        interest3: 'Career Accelerator Program', interest4: 'General Inquiry',
+
+        // FOOTER
+        footer_desc: 'Your Bridge from LATAM to the World. AI-powered Business English training for ambitious professionals.',
+        footer_col1: 'Company', footer_col2: 'Programs', footer_col3: 'Connect',
+        footer_about: 'About Us', footer_team: 'Our Team', footer_careers: 'Careers', footer_press: 'Press',
+        footer_p1: 'Business English', footer_p2: 'Executive Presence', footer_p3: 'Negotiation Skills', footer_p4: 'Corporate Training',
+        footer_contact: 'Contact Us', footer_li: 'LinkedIn', footer_ig: 'Instagram', footer_wa: 'WhatsApp',
+        footer_copy: '© 2026 <span class="footer__copy-gold">Apex GlobalBridge Consulting</span>. All rights reserved.',
+        footer_legal: 'Privacy Policy · Terms of Service',
+      },
+
+      es: {
+        // NAV
+        nav_home: 'Inicio', nav_about: 'Nosotros', nav_courses: 'Cursos',
+        nav_pricing: 'Precios', nav_contact: 'Contacto', nav_cta: 'Comenzar',
+        nav_workwithus: 'Trabaja Con Nosotros',
+
+        // HOME - HERO
+        hero_eyebrow: 'Capacitación Profesional de Inglés de Negocios',
+        hero_title: 'Tu Puente de<br><em>LATAM</em> al Mundo',
+        hero_sub: 'Formación en inglés potenciada por IA para profesionales ambiciosos de América Latina listos para liderar, negociar y crecer en mercados globales.',
+        hero_btn1: 'Ver Cursos ›', hero_btn2: 'Nuestro Enfoque',
+        hero_stat1: 'Profesionales Capacitados', hero_stat2: 'Países Alcanzados', hero_stat3: 'Satisfacción de Clientes',
+        hero_card_title: 'Lo Que Dominarás',
+        hero_item1: 'Negociaciones de Negocios en Inglés', hero_item2: 'Presentaciones Ejecutivas y Pitches',
+        hero_item3: 'Correspondencia Profesional', hero_item4: 'Ruta de Aprendizaje con IA',
+        hero_item5: 'Comunicación Intercultural',
+        hero_badge: '🏆 Mejor Valorado<br>LATAM 2024',
+
+        // HOME - WHY US
+        why_label: 'Por Qué Apex GlobalBridge',
+        why_title: 'Diseñado para Profesionales Latinoamericanos que Van en Serio',
+        why1_title: 'Personalización con IA', why1_text: 'Rutas de aprendizaje adaptativas que evolucionan con tu progreso. Recibe retroalimentación en tiempo real sobre pronunciación, gramática y registro profesional.',
+        why2_title: 'Contexto Específico de LATAM', why2_text: 'Nuestro currículo está diseñado en torno a escenarios reales de profesionales latinoamericanos — desde salas de juntas hasta conferencias globales.',
+        why3_title: 'Crecimiento Profesional Medible', why3_text: 'Sigue tu progreso con hitos vinculados a resultados reales — negociaciones salariales, ascensos y roles internacionales.',
+
+        // HOME - TESTIMONIALS
+        test_label: 'Voces de Estudiantes', test_title: 'Resultados Reales de Profesionales Reales',
+        test1: '"Después de seis meses con Apex GlobalBridge, obtuve un puesto de director regional en una multinacional estadounidense. El entrenador de IA fue invaluable para practicar vocabulario de sala de juntas."',
+        test1_name: 'Valentina Rojas', test1_role: 'Directora Regional, Bogotá',
+        test2: '"Los módulos de comunicación intercultural transformaron la forma en que lidero equipos internacionales. Mi confianza en reuniones en inglés pasó del 40% a casi el 100%."',
+        test2_name: 'Carlos Mendoza', test2_role: 'VP de Operaciones, Ciudad de México',
+        test3: '"Mi empresa inscribió a todo nuestro equipo directivo. El retorno de inversión ha sido extraordinario — nuestras negociaciones con socios estadounidenses ahora son fluidas y exitosas."',
+        test3_name: 'Ana Fernández', test3_role: 'CEO, São Paulo',
+        test_cta: 'Comienza Tu Camino ›',
+
+        // HOME - COMPANIES
+        companies_label: 'Con la Confianza de Organizaciones Líderes en LATAM',
+
+        // ABOUT
+        about_label: 'Quiénes Somos', about_title: 'Somos Tu Puente Estratégico Hacia el Éxito Global',
+        about_p1: 'Apex GlobalBridge Consulting fue fundada con una misión singular: eliminar la barrera del idioma que impide a los profesionales más talentosos de LATAM alcanzar el liderazgo global.',
+        about_p2: 'Combinamos profunda experiencia en capacitación corporativa en inglés con tecnología de IA de vanguardia para ofrecer experiencias de aprendizaje personales, prácticas y poderosas.',
+        about_v1_title: 'Orientados a la Misión', about_v1_text: 'Cada programa se construye en torno a tus metas profesionales, no solo a puntajes de idioma.',
+        about_v2_title: 'Aumentado con IA', about_v2_text: 'La tecnología amplifica la experiencia de nuestros formadores para obtener resultados más rápidos y profundos.',
+        about_v3_title: 'Raíces en LATAM', about_v3_text: 'Entendemos el contexto cultural y empresarial del que vienes.',
+        about_v4_title: 'Enfocados en Resultados', about_v4_text: 'Medimos el éxito en ascensos, negocios cerrados y avances profesionales.',
+        team_label: 'Conoce a Nuestro Equipo', team_title: 'Formadores Expertos. Experiencia Real.',
+        team_sub: 'Nuestros instructores han trabajado en entornos empresariales internacionales en las Américas, Europa y Asia.',
+        stats_label: 'Nuestros Números Hablan', stats_title: 'Una Década Formando Profesionales Globales',
+        stat_l1: 'Profesionales Capacitados', stat_l2: 'Países Alcanzados', stat_l3: 'Tasa de Satisfacción', stat_l4: 'Socios Corporativos',
+
+        // COURSES
+        courses_label: 'Nuestros Programas', courses_title: 'Cursos Diseñados para la Forma en que los Profesionales Aprenden',
+        courses_sub: 'Cada curso está construido en torno a escenarios reales de negocios — sin contenido genérico. Practicarás el inglés que realmente necesitas en tu carrera.',
+        courses_corp_btn: 'Inscripción Corporativa ›',
+        ai_title: '🤖 Impulsado por Tecnología de Aprendizaje con IA',
+        ai_text: 'Cada curso integra nuestro motor de IA propio — análisis de pronunciación en tiempo real, coaching de gramática, recomendaciones de vocabulario personalizadas y ajuste adaptativo de dificultad.',
+        ai_f1: 'Puntuación de Pronunciación en Tiempo Real', ai_f2: 'Ruta de Aprendizaje Adaptativa', ai_f3: 'Compañero de Práctica IA 24/7', ai_f4: 'Panel de Análisis de Progreso',
+        ai_btn: 'Ver Precios ›',
+
+        // PRICING
+        pricing_label: 'Precios Transparentes', pricing_title: 'Invierte en Tu Carrera Global',
+        pricing_sub: 'Sin tarifas ocultas. Sin compromisos a largo plazo. Elige el plan que se adapta a tus ambiciones.',
+        plan1: 'Esencial', plan1_period: 'por mes · facturado mensualmente', plan1_desc: 'Para profesionales que comienzan su camino de inglés global con aprendizaje flexible.',
+        plan2: 'Profesional', plan2_badge: 'Más Popular', plan2_period: 'por mes · facturado mensualmente', plan2_desc: 'Para profesionales ambiciosos listos para acelerar su trayectoria profesional internacional.',
+        plan3: 'Corporativo', plan3_price: 'Personalizado', plan3_period: 'por equipo · alcance personalizado', plan3_desc: 'Para organizaciones que invierten en sus equipos directivos con programas e informes personalizados.',
+        btn_started: 'Comenzar', btn_sales: 'Contactar Ventas',
+        faq_label: 'Preguntas Frecuentes',
+        faq1_q: '¿Puedo cambiar de plan en cualquier momento?', faq1_a: 'Sí. Puedes mejorar o reducir tu plan al inicio de cualquier ciclo de facturación. Si cambias a mitad del ciclo, calcularemos la diferencia proporcional.',
+        faq2_q: '¿Ofrecen una prueba gratuita?', faq2_a: 'Ofrecemos una prueba gratuita de 7 días para los planes Esencial y Profesional. No se requiere tarjeta de crédito. Los clientes corporativos reciben una sesión piloto gratuita para hasta 5 miembros.',
+        faq3_q: '¿Se graban las sesiones para revisarlas después?', faq3_a: 'Todas las sesiones en vivo se graban y están disponibles por 90 días en tu panel. Las sesiones de coaching con IA se guardan indefinidamente.',
+        faq4_q: '¿Qué nivel de inglés necesito para empezar?', faq4_a: 'Aceptamos estudiantes desde A2 (elemental) hasta C1 (avanzado). Nuestra herramienta de evaluación con IA te ubica en la ruta correcta tras una sesión inicial de 15 minutos.',
+
+        // CONTACT
+        contact_label: 'Contáctanos', contact_title: 'Construyamos Tu Puente Juntos',
+        contact_sub: 'Ya seas un profesional individual o un equipo corporativo, nos encantaría entender tus metas y mostrarte exactamente cómo Apex GlobalBridge puede ayudarte.',
+        contact_email_label: 'Correo Electrónico', contact_phone_label: 'Teléfono / WhatsApp', contact_address_label: 'Oficina Principal', contact_hours_label: 'Horario de Atención',
+        contact_hours_val: 'Lun – Vie: 8:00 AM – 7:00 PM (COT)<br>Sáb: 9:00 AM – 1:00 PM',
+        form_title: 'Envíanos un Mensaje',
+        form_fname: 'Nombre', form_lname: 'Apellido', form_email: 'Correo Electrónico',
+        form_company: 'Empresa', form_country: 'País', form_interest: 'Me interesa',
+        form_msg: 'Mensaje', form_msg_ph: 'Cuéntanos sobre tus metas y cómo podemos ayudarte...',
+        form_submit: 'Enviar Mensaje ›',
+        interest1: 'Plan Profesional Individual', interest2: 'Capacitación Corporativa / de Equipo',
+        interest3: 'Programa Acelerador de Carrera', interest4: 'Consulta General',
+
+        // FOOTER
+        footer_desc: 'Tu Puente de LATAM al Mundo. Capacitación en inglés de negocios potenciada por IA para profesionales ambiciosos.',
+        footer_col1: 'Empresa', footer_col2: 'Programas', footer_col3: 'Conectar',
+        footer_about: 'Quiénes Somos', footer_team: 'Nuestro Equipo', footer_careers: 'Empleos', footer_press: 'Prensa',
+        footer_p1: 'Inglés de Negocios', footer_p2: 'Presencia Ejecutiva', footer_p3: 'Habilidades de Negociación', footer_p4: 'Capacitación Corporativa',
+        footer_contact: 'Contáctanos', footer_li: 'LinkedIn', footer_ig: 'Instagram', footer_wa: 'WhatsApp',
+        footer_copy: '© 2026 <span class="footer__copy-gold">Apex GlobalBridge Consulting</span>. Todos los derechos reservados.',
+        footer_legal: 'Política de Privacidad · Términos de Servicio',
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      const t = translations[lang];
+
+      // Update all data-i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+
+      // Flag button states
+      document.getElementById('flag-en').style.borderColor = lang === 'en' ? 'var(--gold)' : 'transparent';
+      document.getElementById('flag-en').style.opacity    = lang === 'en' ? '1' : '0.55';
+      document.getElementById('flag-es').style.borderColor = lang === 'es' ? 'var(--gold)' : 'transparent';
+      document.getElementById('flag-es').style.opacity    = lang === 'es' ? '1' : '0.55';
+    }
+  </script>
+  <!-- ── AI CHAT WIDGET ──────────────────────────────────── -->
+  <style>
+    .chat-bubble {
+      position: fixed; bottom: 28px; right: 28px; z-index: 999;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--gold); color: var(--navy);
+      border: none; cursor: pointer;
+      box-shadow: 0 6px 24px rgba(200,151,58,.45);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .chat-bubble:hover { transform: scale(1.1); box-shadow: 0 10px 32px rgba(200,151,58,.55); }
+
+    .chat-window {
+      position: fixed; bottom: 100px; right: 28px; z-index: 998;
+      width: 370px; max-height: 560px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 16px 56px rgba(11,31,58,.22);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      transform: scale(0.92) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    .chat-window.open {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    .chat-header {
+      background: var(--navy);
+      padding: 1rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .chat-header-info { display: flex; align-items: center; gap: .75rem; }
+    .chat-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: var(--navy);
+    }
+    .chat-header-name { font-size: .9rem; font-weight: 600; color: var(--white); }
+    .chat-header-status { font-size: .72rem; color: rgba(255,255,255,.55); margin-top: .1rem; }
+    .chat-close { background: none; border: none; color: rgba(255,255,255,.6); cursor: pointer; font-size: 1.2rem; padding: .2rem; }
+    .chat-close:hover { color: var(--white); }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 1rem;
+      display: flex; flex-direction: column; gap: .75rem;
+      max-height: 380px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .msg { display: flex; flex-direction: column; max-width: 85%; }
+    .msg--bot { align-self: flex-start; }
+    .msg--user { align-self: flex-end; }
+    .msg-bubble {
+      padding: .7rem 1rem; border-radius: 14px;
+      font-size: .85rem; line-height: 1.6;
+    }
+    .msg--bot .msg-bubble { background: var(--cream); color: var(--text); border-bottom-left-radius: 4px; }
+    .msg--user .msg-bubble { background: var(--navy); color: var(--white); border-bottom-right-radius: 4px; }
+    .msg-time { font-size: .68rem; color: var(--muted); margin-top: .25rem; padding: 0 .3rem; }
+    .msg--user .msg-time { align-self: flex-end; }
+
+    .chat-typing {
+      display: flex; align-items: center; gap: .3rem;
+      padding: .7rem 1rem; background: var(--cream);
+      border-radius: 14px; border-bottom-left-radius: 4px;
+      max-width: 60px;
+      align-self: flex-start;
+    }
+    .chat-typing span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted);
+      animation: bounce 1.2s infinite;
+    }
+    .chat-typing span:nth-child(2) { animation-delay: .2s; }
+    .chat-typing span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+    .chat-input-area {
+      padding: .75rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex; gap: .5rem; align-items: flex-end;
+    }
+    .chat-input {
+      flex: 1; border: 1.5px solid #DDE3EA; border-radius: 10px;
+      padding: .6rem .85rem; font-family: var(--sans); font-size: .88rem;
+      color: var(--text); background: var(--cream); outline: none;
+      resize: none; max-height: 100px; line-height: 1.5;
+      transition: border-color .2s;
+    }
+    .chat-input:focus { border-color: var(--gold); }
+    .chat-send {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--gold); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--navy); font-size: 1rem;
+      transition: background .2s, transform .15s;
+      flex-shrink: 0;
+    }
+    .chat-send:hover { background: var(--gold-lite); transform: scale(1.05); }
+    .chat-send:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .chat-footer { padding: .4rem 1rem .6rem; text-align: center; }
+    .chat-footer span { font-size: .65rem; color: var(--muted); }
+    .chat-footer a { color: var(--gold); }
+
+    @media (max-width: 420px) {
+      .chat-window { width: calc(100vw - 32px); right: 16px; bottom: 90px; }
+    }
+  </style>
+
+  <!-- Chat Button -->
+  <button class="chat-bubble" onclick="toggleChat()" id="chatBubble" title="Chat with our AI Assistant">💬</button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">AG</div>
+        <div>
+          <div class="chat-header-name">Apex AI Assistant</div>
+          <div class="chat-header-status">● Online · Powered by Claude</div>
+        </div>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" rows="1" placeholder="Ask about our courses, pricing..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="chat-send" id="chatSend" onclick="sendMessage()">➤</button>
+    </div>
+    <div class="chat-footer"><span>Powered by <a href="https://anthropic.com" target="_blank">Claude AI</a> · Apex GlobalBridge Consulting</span></div>
+  </div>
+
+  <script>
+    // ── CHAT STATE ─────────────────────────────────────────
+    let chatOpen = false;
+    let chatHistory = [];
+    let isTyping = false;
+    let chatGreeted = false;
+
+    const SYSTEM_PROMPT = `You are the Apex GlobalBridge Consulting AI assistant. You help professionals from Latin America learn about Business English training, career development, and global opportunities.
+
+Company: Apex GlobalBridge Consulting
+Tagline: Your Bridge from LATAM to the World
+Founder: Perry Ieropoli — University of Miami graduate, TEFL-certified, multilingual, Former Clinical Research Project Manager, 15+ years experience
+Location: Principal Office — Bogotá, Colombia
+Email: contact@apexgbconsulting.com | sales@apexgbconsulting.com | corporate@apexgbconsulting.com
+Website: apexgbconsulting.com
+
+PROGRAMS & PRICING (all prices in COP):
+1. Business English Foundations — $3,500,000 COP · 12 weeks · 2×60-min sessions/week · 24 hrs total
+2. Executive Presence & Presentations — $3,500,000 COP · 8 weeks · 2×90-min sessions/week · 24 hrs total
+3. Negotiation & Persuasion in English — $3,500,000 COP · 8 weeks · 2×90-min sessions/week · 24 hrs total
+4. Professional Writing Mastery — $3,500,000 COP · 8 weeks · 2×90-min sessions/week · 24 hrs total
+5. Cross-Cultural Leadership — $3,500,000 COP · 8 weeks · 2×90-min sessions/week · 24 hrs total
+6. Career Accelerator Program — $9,500,000 COP · 24 weeks · All 5 tracks + 1:1 coaching (2hrs/month)
+
+IMPORTANT POLICIES:
+- Intake & Client Assessment fee: $350,000 COP (deducted from package upon enrollment)
+- Monthly installment payments available for all programs
+- Crypto accepted: BTC and ETH
+- English levels served: B1 to C2
+- All sessions are recorded and available for 90 days
+
+ADDITIONAL SERVICES: Resume & LinkedIn optimization, interview prep, international job search guidance, executive recruiter network access, visa application preparation support, global mobility guidance.
+
+VISION: Latin America's leading partner in professional English development and global career mobility.
+MISSION: Empower professionals with communication skills, cultural intelligence, and career development resources to succeed in the global economy.
+PROMISE: Practical Learning. Measurable Progress. Global Opportunities.
+
+Be warm, professional, and helpful. Answer in the same language the user writes in (English or Spanish). Keep responses concise and clear. Always encourage the user to contact the team or enroll if they seem interested. Never make up information not listed above.`;
+
+    function toggleChat() {
+      chatOpen = !chatOpen;
+      document.getElementById('chatWindow').classList.toggle('open', chatOpen);
+      document.getElementById('chatBubble').textContent = chatOpen ? '✕' : '💬';
+      if (chatOpen && !chatGreeted) {
+        chatGreeted = true;
+        setTimeout(() => addBotMessage("Hello! 👋 I'm the Apex GlobalBridge AI assistant. I can help you with information about our programs, pricing, enrollment, and career services. What would you like to know?"), 400);
+      }
+      if (chatOpen) setTimeout(() => document.getElementById('chatInput').focus(), 300);
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    }
+
+    function getTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addBotMessage(text) {
+      const msgs = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'msg msg--bot';
+      div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function addUserMessage(text) {
+      const msgs = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'msg msg--user';
+      div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function showTyping() {
+      const msgs = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.id = 'typingIndicator';
+      div.className = 'chat-typing';
+      div.innerHTML = '<span></span><span></span><span></span>';
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function hideTyping() {
+      const t = document.getElementById('typingIndicator');
+      if (t) t.remove();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || isTyping) return;
+
+      input.value = '';
+      input.style.height = 'auto';
+      addUserMessage(text);
+
+      chatHistory.push({ role: 'user', content: text });
+
+      isTyping = true;
+      document.getElementById('chatSend').disabled = true;
+      showTyping();
+
+      try {
+        const response = await fetch('/.netlify/functions/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system: SYSTEM_PROMPT,
+            messages: chatHistory
+          })
+        });
+
+        const data = await response.json();
+        const reply = data.content?.[0]?.text || "I'm sorry, I couldn't process that. Please try again or contact us at contact@apexgbconsulting.com";
+
+        hideTyping();
+        chatHistory.push({ role: 'assistant', content: reply });
+        addBotMessage(reply);
+
+      } catch (err) {
+        hideTyping();
+        addBotMessage("I'm having trouble connecting right now. Please reach out to us directly at <a href='mailto:contact@apexgbconsulting.com' style='color:var(--gold)'>contact@apexgbconsulting.com</a>");
+      }
+
+      isTyping = false;
+      document.getElementById('chatSend').disabled = false;
+      document.getElementById('chatInput').focus();
+    }
+  </script>
+
+</body>
+</html>
