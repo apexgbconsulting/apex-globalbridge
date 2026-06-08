@@ -24,20 +24,15 @@ exports.handler = async function (event) {
 
     const data = await response.json();
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };const data = await response.json();if (!response.ok) {
+if (!response.ok) {
   console.log("Anthropic Error:", JSON.stringify(data));
 }
-  } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Internal server error", detail: err.message }),
-    };
-  }
+
+return {
+  statusCode: 200,
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(data),
 };
