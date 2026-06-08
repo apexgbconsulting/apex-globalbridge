@@ -1,5 +1,4 @@
 exports.handler = async function (event) {
-  // Only allow POST
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -24,15 +23,25 @@ exports.handler = async function (event) {
 
     const data = await response.json();
 
-if (!response.ok) {
-  console.log("Anthropic Error:", JSON.stringify(data));
-}
+    if (!response.ok) {
+      console.log("Anthropic Error:", JSON.stringify(data));
+    }
 
-return {
-  statusCode: 200,
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(data),
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: "Internal server error",
+        detail: err.message,
+      }),
+    };
+  }
 };
