@@ -1,10 +1,15 @@
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return {
+      statusCode: 405,
+      body: "Method Not Allowed",
+    };
   }
 
   try {
     const { messages, system } = JSON.parse(event.body);
+
+    console.log("KEY EXISTS:", !!process.env.ANTHROPIC_API_KEY);
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -36,6 +41,8 @@ exports.handler = async function (event) {
       body: JSON.stringify(data),
     };
   } catch (err) {
+    console.log("SERVER ERROR:", err);
+
     return {
       statusCode: 500,
       body: JSON.stringify({
