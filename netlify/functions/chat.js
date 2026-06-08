@@ -31,7 +31,9 @@ exports.handler = async function (event) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    };
+    };const data = await response.json();if (!response.ok) {
+  console.log("Anthropic Error:", JSON.stringify(data));
+}
   } catch (err) {
     return {
       statusCode: 500,
